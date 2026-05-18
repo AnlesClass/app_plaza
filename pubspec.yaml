@@ -63,6 +63,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+
+    - assets/images/fondoplaza.jpg
+    - assets/images/iconoplaza.png
+    - assets/images/cubiertos.png
+    - assets/images/iconodelgado.png
+    - assets/images/fondologin.jpg
+    - assets/images/iconoregister.png
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
