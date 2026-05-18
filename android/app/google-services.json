@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "979020451369",
+    "project_id": "app-plaza-24913",
+    "storage_bucket": "app-plaza-24913.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979020451369:android:f9034f269a226d11991638",
+        "android_client_info": {
+          "package_name": "com.example.app_plaza_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtb4EfWetzhyB_a7-wHjvLRfaKV6dDGi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
