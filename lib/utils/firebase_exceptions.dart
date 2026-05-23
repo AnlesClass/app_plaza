@@ -1,4 +1,4 @@
-class FirebaseExceptions {
+abstract class FirebaseExceptions {
   // Traducir excepciones de FirebaseAuthentication
   static String translateFirebaseAuthException(String errorCode) {
     switch (errorCode) {

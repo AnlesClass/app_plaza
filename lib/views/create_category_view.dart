@@ -1,16 +1,23 @@
+import 'package:app_plaza_flutter/models/category.dart';
+import 'package:app_plaza_flutter/repositories/category_repository.dart';
+import 'package:app_plaza_flutter/themes/app_theme.dart';
+import 'package:app_plaza_flutter/utils/utils.dart'; // Para tus AppAlerts
+import 'package:app_plaza_flutter/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class categoria extends StatefulWidget {
-  const categoria({super.key});
+class CreateCategoryView extends ConsumerStatefulWidget {
+  const CreateCategoryView({super.key});
 
   @override
-  State<categoria> createState() => _CreateCategoryState();
+  ConsumerState<CreateCategoryView> createState() => _CreateCategoryState();
 }
 
-class _CreateCategoryState extends State<categoria> {
-  
+class _CreateCategoryState extends ConsumerState<CreateCategoryView> {
   final TextEditingController _categoryNameCtrl = TextEditingController();
   final TextEditingController _descriptionCtrl = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -21,15 +28,17 @@ class _CreateCategoryState extends State<categoria> {
 
   @override
   Widget build(BuildContext context) {
+    // Escuchamos el repositorio recién creado
+    final CategoryRepository categoryRepository = ref.watch(
+      categoryRepositoryProvider,
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF701321),
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white), 
-          onPressed: () {
-          },
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () {},
         ),
         title: const Text(
           "Categoría",
@@ -42,119 +51,131 @@ class _CreateCategoryState extends State<categoria> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 35),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Crear Categoría",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF701321), 
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Crear Categoría",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              "Cree una nueva categoría para sus productos.",
-              style: TextStyle(
-                color: Color(0xFFB38E44), 
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+              const SizedBox(height: 4),
+              const Text(
+                "Cree una nueva categoría para sus productos.",
+                style: TextStyle(
+                  color: AppTheme.tertiaryColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            const SizedBox(height: 35),
+              const SizedBox(height: 35),
 
-            _buildTextField(
-              label: "Nombre de la Categoría",
-              hint: "Ej: Bebidas Alcohólicas",
-              maxLength: 50,
-              controller: _categoryNameCtrl,
-            ),
-            const SizedBox(height: 25),
-
-            _buildTextField(
-              label: "Descripción",
-              hint: "Describe categoría (opcional)",
-              maxLength: 200,
-              maxLines: 4, 
-              controller: _descriptionCtrl,
-            ),
-            const SizedBox(height: 35),
-
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-
-                  print("Nueva Categoría: ${_categoryNameCtrl.text}");
-                  print("Descripción: ${_descriptionCtrl.text}");
+              // Campo: Nombre de Categoría
+              CustomTextFormField(
+                label: "Nombre de la Categoría",
+                hint: "Ej: Bebidas Alcohólicas",
+                maxLength: 50,
+                controller: _categoryNameCtrl,
+                icon: Icons.category_outlined,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "El nombre de la categoría es requerido";
+                  }
+                  return null;
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF701321),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              ),
+              const SizedBox(height: 25),
+
+              // Campo: Descripción
+              CustomTextFormField(
+                label: "Descripción",
+                hint: "Describe la categoría (opcional)",
+                maxLength: 200,
+                maxLines: 4,
+                controller: _descriptionCtrl,
+                icon: Icons.text_fields_outlined,
+                // Al ser opcional, no requiere validador estricto de vacío
+              ),
+              const SizedBox(height: 35),
+
+              // Botón de Acción optimizado
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // 1. Validar campos locales
+                    if (!_formKey.currentState!.validate()) return;
+
+                    // 2. Solicitar confirmación interactiva
+                    final bool isAccepted = await AppAlerts.showConfirmation(
+                      context: context,
+                      title: "Confirmar Acción",
+                      message:
+                          "¿Está seguro(a) de que desea crear esta nueva categoría de productos?",
+                    );
+
+                    if (!isAccepted) return;
+
+                    // 3. Crear instancia del modelo
+                    final newCategory = Category(
+                      name: _categoryNameCtrl.text.trim(),
+                      description: _descriptionCtrl.text.trim(),
+                    );
+
+                    // 4. Guardar en Firestore de forma segura
+                    try {
+                      await categoryRepository.createCategory(newCategory);
+
+                      if (context.mounted) {
+                        AppAlerts.showSnackbar(
+                          context,
+                          "Categoría registrada correctamente.",
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        AppAlerts.showSnackbar(context, e.toString());
+                      }
+                    }
+
+                    // 5. Limpieza visual impecable
+                    clearFields();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
                   ),
-                  elevation: 2,
-                ),
-                child: const Text(
-                  "Crear Categoría",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  child: const Text(
+                    "Crear Categoría",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required int maxLength,
-    required TextEditingController controller,
-    int maxLines = 1,
-  }) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        return TextFormField(
-          controller: controller,
-          maxLength: maxLength,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: const TextStyle(
-              color: Color(0xFF701321),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-            hintText: hint,
-            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
 
-            suffixIcon: controller.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.cancel_outlined, color: Colors.grey),
-                    onPressed: () => controller.clear(),
-                  )
-                : null,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            counterText: "${controller.text.length}/$maxLength", // Contador reactivo en tiempo real
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF701321), width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF701321), width: 2),
-            ),
-          ),
-        );
-      },
-    );
+  void clearFields() {
+    _categoryNameCtrl.clear();
+    _descriptionCtrl.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _formKey.currentState?.reset();
+    });
   }
 }
