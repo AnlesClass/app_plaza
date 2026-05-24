@@ -70,6 +70,7 @@ abstract class AppAlerts {
     String message, {
     IconData iconData = Icons.info_outline,
     Color backgroundColor = AppTheme.quaternaryColor,
+    bool isError = false,
   }) {
     ScaffoldMessenger.of(context).clearSnackBars();
 
@@ -83,7 +84,10 @@ abstract class AppAlerts {
               // Añadido por seguridad para textos largos
               child: Text(
                 message,
-                style: const TextStyle(color: AppTheme.secondaryColor),
+                style: TextStyle(
+                  color: isError ? Colors.red : AppTheme.secondaryColor,
+                  fontWeight: isError ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
           ],

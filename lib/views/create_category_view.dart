@@ -109,10 +109,10 @@ class _CreateCategoryState extends ConsumerState<CreateCategoryView> {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // 1. Validar campos locales
+                    // Validar campos locales
                     if (!_formKey.currentState!.validate()) return;
 
-                    // 2. Solicitar confirmación interactiva
+                    // Solicitar confirmación
                     final bool isAccepted = await AppAlerts.showConfirmation(
                       context: context,
                       title: "Confirmar Acción",
@@ -122,13 +122,13 @@ class _CreateCategoryState extends ConsumerState<CreateCategoryView> {
 
                     if (!isAccepted) return;
 
-                    // 3. Crear instancia del modelo
+                    // Crear modelo
                     final newCategory = Category(
                       name: _categoryNameCtrl.text.trim(),
                       description: _descriptionCtrl.text.trim(),
                     );
 
-                    // 4. Guardar en Firestore de forma segura
+                    // Guardar en Firestore
                     try {
                       await categoryRepository.createCategory(newCategory);
 
@@ -144,7 +144,7 @@ class _CreateCategoryState extends ConsumerState<CreateCategoryView> {
                       }
                     }
 
-                    // 5. Limpieza visual impecable
+                    // Limpiar campos
                     clearFields();
                   },
                   style: ElevatedButton.styleFrom(

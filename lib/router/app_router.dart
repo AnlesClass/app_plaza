@@ -9,7 +9,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 });
 
 final appRouter = GoRouter(
-  initialLocation: "/register",
+  initialLocation: "/create-local",
   routes: [
     GoRoute(path: "/", builder: (context, state) => const SplashView()),
     GoRoute(path: "/login", builder: (context, state) => const LoginView()),
@@ -32,6 +32,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: "/create-category",
       builder: (context, state) => const CreateCategoryView(),
+    ),
+    GoRoute(
+      path: "/create-table",
+      builder: (context, state) => const CreateTableView(),
     ),
   ],
 );
