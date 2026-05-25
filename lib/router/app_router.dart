@@ -2,6 +2,8 @@ import 'package:app_plaza_flutter/views/create_role_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_plaza_flutter/views/views.dart';
+import 'package:app_plaza_flutter/views/create_product_view.dart';
+import 'package:app_plaza_flutter/views/assign_product_view.dart';
 
 // Provider del GoRouter
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -30,8 +32,12 @@ final appRouter = GoRouter(
       builder: (context, state) => const CreateRoleView(),
     ),
     GoRoute(
-      path: "/create-category",
-      builder: (context, state) => const CreateCategoryView(),
+      path: '/create-product',
+      builder: (context, state) => const CreateProductView(),
+    ),
+    GoRoute(
+      path: '/assign-product',
+      builder: (context, state) => const AssignProductView(),
     ),
     GoRoute(
       path: "/create-table",
