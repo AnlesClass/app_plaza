@@ -4,7 +4,8 @@ class Table {
   final String name;
   final int capacity;
   final DateTime creationDate;
-  final bool isEnable;
+  final bool isEnable; // true: habilitada, false: inhabilitada
+  final bool isOccupied; // true: ocupada, false: libre
 
   Table({
     this.uid,
@@ -13,6 +14,7 @@ class Table {
     required this.capacity,
     required this.creationDate,
     required this.isEnable,
+    required this.isOccupied,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,8 +22,9 @@ class Table {
       "idLocal": idLocal,
       "name": name,
       "capacity": capacity,
-      "creationDate": creationDate.toIso8601String(), // Fecha string estándar
+      "creationDate": creationDate.toIso8601String(),
       "isEnable": isEnable,
+      "isOccupied": isOccupied,
     };
   }
 
@@ -31,8 +34,9 @@ class Table {
       idLocal: map["idLocal"],
       name: map["name"],
       capacity: map["capacity"],
-      creationDate: DateTime.parse(map["creationDate"]), // String a Datetime
-      isEnable: map["isEnable"],
+      creationDate: DateTime.parse(map["creationDate"]),
+      isEnable: map["isEnable"] ?? false,
+      isOccupied: map["isOccupied"] ?? false,
     );
   }
 }

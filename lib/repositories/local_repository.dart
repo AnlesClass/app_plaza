@@ -1,6 +1,6 @@
 import 'package:app_plaza_flutter/collections/firestore_collections.dart';
 import 'package:app_plaza_flutter/models/local.dart';
-import 'package:app_plaza_flutter/providers/firebase_provider.dart';
+import 'package:app_plaza_flutter/providers/firebase_providers.dart';
 import 'package:app_plaza_flutter/utils/firebase_exceptions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

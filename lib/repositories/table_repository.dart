@@ -1,6 +1,6 @@
 import 'package:app_plaza_flutter/collections/firestore_collections.dart';
 import 'package:app_plaza_flutter/models/table.dart';
-import 'package:app_plaza_flutter/providers/firebase_provider.dart';
+import 'package:app_plaza_flutter/providers/firebase_providers.dart';
 import 'package:app_plaza_flutter/utils/firebase_exceptions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,6 +78,23 @@ class TableRepository {
       throw FirebaseExceptions.translateFirestoreException(e.code);
     } catch (e) {
       throw "Error al cargar el listado de mesas.";
+    }
+  }
+
+  // Mesa: Listar todas por Local
+  Stream<List<Table>> streamTablesByLocal(String idLocal) {
+    try {
+      return _firestoreProvider
+          .collection(FirestoreCollections.tables)
+          .where('idLocal', isEqualTo: idLocal)
+          .snapshots()
+          .map(
+            (snapshot) => snapshot.docs
+                .map((doc) => Table.fromMap(doc.data(), doc.id))
+                .toList(),
+          );
+    } catch (e) {
+      throw "Error al obtener stream de mesas: $e";
     }
   }
 }

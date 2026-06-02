@@ -107,7 +107,7 @@ class _AssignProductViewState extends State<AssignProductView> {
                   ),
                   Switch(
                     value: _isBlocked,
-                    activeColor: Colors.white,
+                    activeThumbColor: Colors.white,
                     activeTrackColor: AppTheme.primaryColor,
                     onChanged: (value) {
                       setState(() {
@@ -135,7 +135,7 @@ class _AssignProductViewState extends State<AssignProductView> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      print("Asignando...");
+                      debugPrint("Asignando...");
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -185,7 +185,7 @@ class _AssignProductViewState extends State<AssignProductView> {
     required Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       hint: Text(
         hint,
         style: const TextStyle(color: Colors.grey, fontSize: 14),

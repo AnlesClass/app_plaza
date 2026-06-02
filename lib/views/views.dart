@@ -4,3 +4,4 @@ export 'create_table_view.dart';
 export 'login_view.dart';
 export 'register_view.dart';
 export 'splash_view.dart';
+export 'waiter_tables_view.dart';

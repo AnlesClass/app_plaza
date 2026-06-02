@@ -15,9 +15,11 @@ class AuthRepository {
 
   // Usuario: Iniciar Sesión
   /// Inicia una sesión de usuario con su **correo** y **contraseña**.
-  Future<void> loginUser(String email, String password) async {
+  Future<UserCredential> loginUser(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final UserCredential userCredential = await _auth
+          .signInWithEmailAndPassword(email: email, password: password);
+      return userCredential;
     } on FirebaseAuthException catch (authException) {
       throw FirebaseExceptions.translateFirebaseAuthException(
         authException.code,

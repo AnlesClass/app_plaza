@@ -201,44 +201,48 @@ class _CreateTableViewState extends ConsumerState<CreateTableView> {
                 child: ElevatedButton(
                   onPressed: _isSubmitEnabled
                       ? () async {
-                    if (!_formKey.currentState!.validate()) return;
+                          if (!_formKey.currentState!.validate()) return;
 
-                    final bool isAccepted = await AppAlerts.showConfirmation(
-                      context: context,
-                      title: "Confirmar Acción",
-                      message:
-                          "¿Está seguro(a) de que desea asignar esta mesa al local seleccionado?",
-                    );
-                    if (!isAccepted) return;
+                          final bool
+                          isAccepted = await AppAlerts.showConfirmation(
+                            context: context,
+                            title: "Confirmar Acción",
+                            message:
+                                "¿Está seguro(a) de que desea asignar esta mesa al local seleccionado?",
+                          );
+                          if (!isAccepted) return;
 
-                    final int capacity = int.parse(_capacityCtrl.text.trim());
-                    final newTable = Table(
-                      idLocal: selectedLocal!.uid!,
-                      name: _nameCtrl.text.trim(),
-                      capacity: capacity,
-                      creationDate: DateTime.now(),
-                      isEnable: true,
-                    );
+                          final int capacity = int.parse(
+                            _capacityCtrl.text.trim(),
+                          );
+                          final newTable = Table(
+                            idLocal: selectedLocal!.uid!,
+                            name: _nameCtrl.text.trim(),
+                            capacity: capacity,
+                            creationDate: DateTime.now(),
+                            isEnable: true,
+                            isOccupied: false,
+                          );
 
-                    try {
-                      await tableRepository.createTable(newTable);
-                      if (context.mounted) {
-                        AppAlerts.showSnackbar(
-                          context,
-                          'Mesa "${newTable.name}" asignada correctamente.',
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        AppAlerts.showSnackbar(context, e.toString());
-                      }
-                    }
+                          try {
+                            await tableRepository.createTable(newTable);
+                            if (context.mounted) {
+                              AppAlerts.showSnackbar(
+                                context,
+                                'Mesa "${newTable.name}" asignada correctamente.',
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              AppAlerts.showSnackbar(context, e.toString());
+                            }
+                          }
 
-                    setState(() {
-                      selectedLocal = null;
-                    });
-                    clearFields();
-                  }
+                          setState(() {
+                            selectedLocal = null;
+                          });
+                          clearFields();
+                        }
                       : null,
                   child: const Text(
                     "Asignar Mesa",

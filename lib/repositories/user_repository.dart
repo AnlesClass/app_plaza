@@ -1,5 +1,5 @@
 import 'package:app_plaza_flutter/models/models.dart';
-import 'package:app_plaza_flutter/providers/firebase_provider.dart';
+import 'package:app_plaza_flutter/providers/firebase_providers.dart';
 import 'package:app_plaza_flutter/collections/firestore_collections.dart';
 import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

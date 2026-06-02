@@ -99,4 +99,18 @@ abstract class AppAlerts {
       ),
     );
   }
+
+  static void showInformation(
+    BuildContext context,
+    String title,
+    String message,
+  ) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(title: Text(title), content: Text(message));
+      },
+      barrierDismissible: true,
+    );
+  }
 }

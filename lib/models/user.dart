@@ -43,4 +43,9 @@ class User {
       isActive: map["isActive"],
     );
   }
+
+  @override
+  String toString() {
+    return "ID Rol: $idRol\nID Local: $idLocal\nUsername: $username\nName: $name\nLastname: $lastname\nEmail: $email\nIsActive $isActive";
+  }
 }

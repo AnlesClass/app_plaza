@@ -137,8 +137,6 @@ class _CreateLocalViewState extends ConsumerState<CreateLocalView> {
                     );
                     // Validar aceptación
                     if (!isAccepted) return;
-                    // TODO: Empezar a procesar. Bloquear campos y Botón.
-                    // TODO: Validar RUC? -> Pedir confirmación.
                     // Crear modelo Local
                     final newLocal = Local(
                       name: _nameCtrl.text,

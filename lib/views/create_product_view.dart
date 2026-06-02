@@ -182,7 +182,7 @@ class _CreateProductViewState extends State<CreateProductView> {
     required String? Function(String?)? validator,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       hint: Text(
         hint,
         style: const TextStyle(color: Colors.grey, fontSize: 14),
