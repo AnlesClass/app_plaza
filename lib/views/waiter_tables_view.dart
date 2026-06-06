@@ -2,6 +2,7 @@
 import 'package:app_plaza_flutter/models/models.dart';
 import 'package:app_plaza_flutter/providers/table_providers.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
+// ignore: unused_import
 import 'package:app_plaza_flutter/widgets/widgets.dart'; // TODO: Esto lo usaré al cambiar los widgets a su carpeta corres.
 import 'package:flutter/material.dart' hide Table;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,7 +121,7 @@ class _WaiterTablesViewState extends ConsumerState<WaiterTablesView> {
             return GridView.builder(
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 columnas
+                crossAxisCount: 2, // Columnas
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.1, // Rectángulo vertical
@@ -227,7 +228,7 @@ class _TableCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: textColor.withOpacity(0.2),
+                  color: textColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

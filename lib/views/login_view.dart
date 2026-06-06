@@ -30,14 +30,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final ref = this.ref;
+    final sessionAsync = ref.watch(sessionDataProvider);
+    final authProvider = ref.read(firebaseAuthInstanceProvider);
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('assets/images/fondologin.jpg', fit: BoxFit.cover),
-
           Center(
             child: SingleChildScrollView(
               child: Container(
@@ -62,6 +62,52 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // TODO: Test Future
+                      sessionAsync.when(
+                        data: (sessionData) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            sessionData == null
+                                ? '[debug] sessionData: null (sin sesión)'
+                                : '[debug] sessionData:\n'
+                                      '  uid: ${sessionData.firebaseUid}\n'
+                                      '  usuario: ${sessionData.user.username}\n'
+                                      '  local: ${sessionData.user.idLocal}\n'
+                                      '  rol: ${sessionData.user.idRol}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        loading: () => const Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            '[debug] sessionData: cargando...',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                        ),
+                        error: (error, _) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            '[debug] sessionData error: $error',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+
+                      TextButton(
+                        onPressed: () async {
+                          await authProvider.signOut();
+                        },
+                        child: const Text("Cerrar Sesión"),
+                      ),
+
                       // Ícono principal
                       const Icon(
                         Icons.restaurant_menu_outlined,
@@ -139,11 +185,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 email,
                                 password,
                               );
+                              // El usuario SÍ llega, entonces se imprime el uid.
                             } catch (e) {
+                              // Se imprime error si no llega usuario y el contexto está montado.
                               if (context.mounted) {
                                 AppAlerts.showSnackbar(context, e.toString());
-                                debugPrint("Error en logeo");
+                                debugPrint("Error en el logeo de usuario");
                               }
+                              // Se establece el estado de envío a false.
                               if (mounted) {
                                 setState(() => _isSubmitting = false);
                               }
@@ -157,7 +206,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                   context,
                                   "No se ha encontrado usuario",
                                 );
-                                debugPrint("Error de usuario nulo");
                               }
                               if (mounted) {
                                 setState(() => _isSubmitting = false);
@@ -200,19 +248,22 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               return;
                             }
 
+                            debugPrint("Llego hasta aquí: 01");
+
                             // Limpiar campos antes de cambiar pantalla (si más adelante navegas).
                             _userCtrl.clear();
                             _passCtrl.clear();
 
                             if (mounted) setState(() => _isSubmitting = false);
-                            // NOTA: ¿Por qué no es necesario cargar los datos del usuario en este punto?
-                            // Porque hay un provider que está escuchando el estado de autenticación. Si
-                            // el usuario está autenticado el provider carga en automático.
-                            await Future.delayed(const Duration(seconds: 3));
+                            debugPrint("Llego hasta aquí: 02");
 
-                            final sessionData = await ref.read(
+                            // Usar 'refresh' fuerza recálculo tras el login
+                            final sessionData = await ref.refresh(
                               sessionDataProvider.future,
                             );
+                            debugPrint("Llego hasta aquí: 03");
+                            debugPrint("SessionData: $sessionData");
+
                             if (sessionData != null) {
                               debugPrint(
                                 "Usuario ingresado: ${sessionData.user}, UID: ${sessionData.firebaseUid}",

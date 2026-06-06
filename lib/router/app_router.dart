@@ -11,7 +11,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 });
 
 final appRouter = GoRouter(
-  initialLocation: "/waiter-table",
+  initialLocation: "/",
   routes: [
     GoRoute(path: "/", builder: (context, state) => const SplashView()),
     GoRoute(path: "/login", builder: (context, state) => const LoginView()),
@@ -46,6 +46,11 @@ final appRouter = GoRouter(
     GoRoute(
       path: "/waiter-table",
       builder: (context, state) => const WaiterTablesView(),
+    ),
+    // TESTING
+    GoRoute(
+      path: "/test-routes",
+      builder: (context, state) => const TestRoutesView(),
     ),
   ],
 );

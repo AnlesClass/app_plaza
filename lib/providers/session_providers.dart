@@ -12,6 +12,7 @@ class SessionData {
   const SessionData({required this.firebaseUid, required this.user});
 }
 
+// Testeado y funcionando.
 /// Constantemente provee el estado de la instancia Auth.
 final firebaseAuthUserProvider = StreamProvider<fba.User?>((ref) {
   final auth = ref.read(firebaseAuthInstanceProvider);
@@ -21,9 +22,8 @@ final firebaseAuthUserProvider = StreamProvider<fba.User?>((ref) {
 /// Provee datos de la sesión activa, cargados de la base de datos cada vez que
 /// cambia el valor de "FirebaseAuthUserProvider".
 final sessionDataProvider = FutureProvider<SessionData?>((ref) async {
-  final firebaseUser = ref.watch(firebaseAuthUserProvider).value;
+  final firebaseUser = await ref.watch(firebaseAuthUserProvider.future);
   if (firebaseUser == null) return null;
-
   final userRepo = ref.read(userRepositoryProvider);
   final appUser = await userRepo.readUser(firebaseUser.uid);
   return SessionData(firebaseUid: firebaseUser.uid, user: appUser);
@@ -32,7 +32,7 @@ final sessionDataProvider = FutureProvider<SessionData?>((ref) async {
 /// Modelo del usuario. Solo modelo, para datos completos consultar el provider
 /// `sessionDataProvider`.
 final activeUserProvider = FutureProvider<User?>((ref) async {
-  final firebaseUser = ref.watch(firebaseAuthUserProvider).value;
+  final firebaseUser = await ref.watch(firebaseAuthUserProvider.future);
   if (firebaseUser == null) return null;
 
   final userRepo = ref.read(userRepositoryProvider);
@@ -42,6 +42,6 @@ final activeUserProvider = FutureProvider<User?>((ref) async {
 /// UID del usuario activo. Solo UID, para datos completos consultar el provider
 /// `sessionDataProvider`.
 final activeFirebaseUidProvider = FutureProvider<String?>((ref) async {
-  final firebaseUser = ref.watch(firebaseAuthUserProvider).value;
+  final firebaseUser = await ref.watch(firebaseAuthUserProvider.future);
   return firebaseUser?.uid;
 });
