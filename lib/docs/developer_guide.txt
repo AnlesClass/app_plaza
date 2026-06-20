@@ -1,0 +1,5 @@
+# CÓMO AGREGAR NUEVAS RUTAS
+Para agregar nuevas rutas se deben asignar en 3 archivos diferentes.
+- routes_collections: Encargado de almacenar nombres de las rutas para evitar Harcodearlas en cualquier momento.
+- route_config: Encargado de configurar las rutas para saber si tienen permisos según un rol. Además almacena las rutas 'Home' por cada rol.
+- app_router: Configura el 'app_router' para permitir la navegación fácil a través de la aplicación gracias a un Provider.

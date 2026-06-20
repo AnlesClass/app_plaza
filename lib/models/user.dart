@@ -1,6 +1,6 @@
 class User {
   String? uid;
-  final String idRol;
+  final String idRole;
   final String idLocal;
   final String username;
   final String name;
@@ -10,7 +10,7 @@ class User {
 
   User({
     this.uid,
-    required this.idRol,
+    required this.idRole,
     required this.idLocal,
     required this.username,
     required this.name,
@@ -21,7 +21,7 @@ class User {
 
   Map<String, dynamic> toMap() {
     return {
-      "idRol": idRol,
+      "idRole": idRole,
       "idLocal": idLocal,
       "username": username,
       "name": name,
@@ -34,7 +34,7 @@ class User {
   factory User.fromMap(Map<String, dynamic> map, String id) {
     return User(
       uid: id,
-      idRol: map["idRol"],
+      idRole: map["idRole"],
       idLocal: map["idLocal"],
       username: map["username"],
       name: map["name"],
@@ -46,6 +46,6 @@ class User {
 
   @override
   String toString() {
-    return "ID Rol: $idRol\nID Local: $idLocal\nUsername: $username\nName: $name\nLastname: $lastname\nEmail: $email\nIsActive $isActive";
+    return "ID Rol: $idRole\nID Local: $idLocal\nUsername: $username\nName: $name\nLastname: $lastname\nEmail: $email\nIsActive $isActive";
   }
 }

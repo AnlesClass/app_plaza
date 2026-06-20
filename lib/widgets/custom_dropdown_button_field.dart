@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomDropdownButtonFormField<T> extends StatefulWidget {
   final String hint;
-  final T initialValue;
+  final T? initialValue;
   final List<T> items;
   final void Function(T? value)? onChanged;
   final String? Function(T? value)? validator;

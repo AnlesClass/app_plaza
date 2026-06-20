@@ -1,5 +1,6 @@
 import 'package:app_plaza_flutter/models/models.dart';
 import 'package:app_plaza_flutter/repositories/repositories.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:app_plaza_flutter/widgets/widgets.dart';
@@ -38,8 +39,15 @@ class _CreateLocalViewState extends ConsumerState<CreateLocalView> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back, color: AppTheme.tertiaryColor),
+          onPressed: () {
+            // Consultar AppRouter
+            final appRouter = ref.read(appRouterProvider);
+            // Navegar hacia atrás de ser posible
+            if (appRouter.canPop()) {
+              appRouter.pop();
+            }
+          },
         ),
         title: const Text(
           "Local",
@@ -50,6 +58,7 @@ class _CreateLocalViewState extends ConsumerState<CreateLocalView> {
           ),
         ),
       ),
+      // Formulario Completo
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(

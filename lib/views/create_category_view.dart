@@ -1,10 +1,11 @@
 import 'package:app_plaza_flutter/models/category.dart';
 import 'package:app_plaza_flutter/repositories/category_repository.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:app_plaza_flutter/widgets/widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 
 class CreateCategoryView extends ConsumerStatefulWidget {
   const CreateCategoryView({super.key});
@@ -37,8 +38,15 @@ class _CreateCategoryState extends ConsumerState<CreateCategoryView> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back, color: AppTheme.tertiaryColor),
+          onPressed: () {
+            // Consultar AppRouter
+            final appRouter = ref.read(appRouterProvider);
+            // Navegar hacia atrás de ser posible
+            if (appRouter.canPop()) {
+              appRouter.pop();
+            }
+          },
         ),
         title: const Text(
           "Categoría",

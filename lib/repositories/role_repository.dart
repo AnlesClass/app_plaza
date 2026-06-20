@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../collections/firestore_collections.dart';
 import '../providers/providers.dart';
 
+// Provider del Repositorio de los Roles
 final roleRepositoryProvider = Provider<RoleRepository>((ref) {
   final firestoreProvider = ref.watch(firestoreInstanceProvider);
   return RoleRepository(firestoreProvider: firestoreProvider);

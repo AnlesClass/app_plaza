@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// VISTA: Logeo de un usuario registrado en el sistema por el administrador.
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
 
@@ -16,6 +17,7 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
+  // Variables Globales
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _userCtrl = TextEditingController();
   late final TextEditingController _passCtrl = TextEditingController();
@@ -30,14 +32,16 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final sessionAsync = ref.watch(sessionDataProvider);
-    final authProvider = ref.read(firebaseAuthInstanceProvider);
+    // Providers: Observar cambio en sesión activa,
+    final sessionDataAsync = ref.watch(sessionDataProvider);
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // Imagen: Fondo de pantalla
           Image.asset('assets/images/fondologin.jpg', fit: BoxFit.cover),
+          // Tarjeta: Formulario de Inicio de Sesión
           Center(
             child: SingleChildScrollView(
               child: Container(
@@ -62,8 +66,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // TODO: Test Future
-                      sessionAsync.when(
+                      // ------ INICIO DEL DEBUG ------
+                      // Widget Genérico: En base a datos de la sesión actual.
+                      sessionDataAsync.when(
                         data: (sessionData) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Text(
@@ -73,7 +78,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       '  uid: ${sessionData.firebaseUid}\n'
                                       '  usuario: ${sessionData.user.username}\n'
                                       '  local: ${sessionData.user.idLocal}\n'
-                                      '  rol: ${sessionData.user.idRol}',
+                                      '  rol: ${sessionData.user.idRole}',
                             style: const TextStyle(
                               fontSize: 11,
                               color: Colors.grey,
@@ -100,13 +105,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           ),
                         ),
                       ),
-
-                      TextButton(
-                        onPressed: () async {
-                          await authProvider.signOut();
-                        },
-                        child: const Text("Cerrar Sesión"),
-                      ),
+                      // ------ FIN DEL DEBUG ------
 
                       // Ícono principal
                       const Icon(
@@ -151,21 +150,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         controller: _passCtrl,
                         isPassword: true,
                       ),
-
                       const SizedBox(height: 35),
+
+                      // Botón: Inicio de Sesión
                       SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () async {
+                            // Retornar si ya se está enviando
                             if (_isSubmitting) return;
+                            // Retornar si el formulario no es válido
                             if (!(_formKey.currentState?.validate() ?? false)) {
                               return;
                             }
+                            // De no ser el caso, cambiar estado a "True"
+                            setState(() => changeSubmitState(true));
 
-                            setState(() => _isSubmitting = true);
-
-                            // Leer repositorios: Authentication, User
+                            // Leer providers: repositorio Auth, User y GoRouter
                             final authRepository = ref.read(
                               authRepositoryProvider,
                             );
@@ -176,25 +178,23 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             // Capturar el texto de los campos
                             final email = _userCtrl.text.trim();
                             final password = _passCtrl.text;
-
+                            // Crear credencial de usuario (nula)
                             final UserCredential userCredential;
 
-                            // Consultar usuario
+                            // Intentar consultar usuario
                             try {
                               userCredential = await authRepository.loginUser(
                                 email,
                                 password,
                               );
-                              // El usuario SÍ llega, entonces se imprime el uid.
                             } catch (e) {
-                              // Se imprime error si no llega usuario y el contexto está montado.
+                              // Mensaje: El usuario no pudo iniciar sesión. Si el contexto está montado
                               if (context.mounted) {
                                 AppAlerts.showSnackbar(context, e.toString());
-                                debugPrint("Error en el logeo de usuario");
                               }
                               // Se establece el estado de envío a false.
                               if (mounted) {
-                                setState(() => _isSubmitting = false);
+                                setState(() => changeSubmitState(false));
                               }
                               return;
                             }
@@ -208,33 +208,33 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 );
                               }
                               if (mounted) {
-                                setState(() => _isSubmitting = false);
+                                setState(() => changeSubmitState(false));
                               }
                               return;
                             }
 
-                            // Consultar datos de usuario
+                            // Crear modelo de Usuario (nulo)
                             final User user;
-
+                            // Intentar consultar datos de usuario
                             try {
                               user = await userRepository.readUser(
                                 userCredential.user!.uid,
                               );
                             } catch (e) {
+                              // Lanzar mensaje en caso de error
                               if (context.mounted) {
                                 AppAlerts.showSnackbar(context, e.toString());
-                                debugPrint(
-                                  "Error al consultar datos de usuario",
-                                );
                               }
+                              // Cambiar estado de envío a "False"
                               if (mounted) {
-                                setState(() => _isSubmitting = false);
+                                setState(() => changeSubmitState(false));
                               }
                               return;
                             }
 
                             // Validar que el usuario esté activo
                             if (!user.isActive) {
+                              // Lanzar mensaje en caso de Inactivo
                               if (context.mounted) {
                                 AppAlerts.showInformation(
                                   context,
@@ -242,34 +242,20 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                   "Este usuario se encuentra inhabilitado para realizar acciones dentro de la aplicación.",
                                 );
                               }
+                              // Cambiar estado de envío de formulario a "False"
                               if (mounted) {
-                                setState(() => _isSubmitting = false);
+                                setState(() => changeSubmitState(false));
                               }
                               return;
                             }
 
-                            debugPrint("Llego hasta aquí: 01");
-
-                            // Limpiar campos antes de cambiar pantalla (si más adelante navegas).
+                            // Limpiar campos antes de cambiar pantalla.
                             _userCtrl.clear();
                             _passCtrl.clear();
 
-                            if (mounted) setState(() => _isSubmitting = false);
-                            debugPrint("Llego hasta aquí: 02");
-
-                            // Usar 'refresh' fuerza recálculo tras el login
-                            final sessionData = await ref.refresh(
-                              sessionDataProvider.future,
-                            );
-                            debugPrint("Llego hasta aquí: 03");
-                            debugPrint("SessionData: $sessionData");
-
-                            if (sessionData != null) {
-                              debugPrint(
-                                "Usuario ingresado: ${sessionData.user}, UID: ${sessionData.firebaseUid}",
-                              );
-                            } else {
-                              debugPrint("El valor del Provider es nulo.");
+                            // Dejar el estado de "Enviando"
+                            if (mounted) {
+                              setState(() => changeSubmitState(false));
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -302,5 +288,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
         ],
       ),
     );
+  }
+
+  /// Cambia el estado de enviando/no enviando del formulario.
+  void changeSubmitState(bool value) {
+    _isSubmitting = value;
   }
 }

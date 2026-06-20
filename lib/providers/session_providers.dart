@@ -4,15 +4,6 @@ import 'package:app_plaza_flutter/repositories/repositories.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fba;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Datos de sesión activa.
-class SessionData {
-  final String firebaseUid;
-  final User user;
-
-  const SessionData({required this.firebaseUid, required this.user});
-}
-
-// Testeado y funcionando.
 /// Constantemente provee el estado de la instancia Auth.
 final firebaseAuthUserProvider = StreamProvider<fba.User?>((ref) {
   final auth = ref.read(firebaseAuthInstanceProvider);

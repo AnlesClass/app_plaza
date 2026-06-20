@@ -1,7 +1,9 @@
 export 'category.dart';
+export 'local_product_with_details.dart';
 export 'local_product.dart';
 export 'local.dart';
 export 'product.dart';
 export 'role.dart';
+export 'session_data.dart';
 export 'table.dart';
 export 'user.dart';

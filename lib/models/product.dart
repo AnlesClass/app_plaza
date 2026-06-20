@@ -12,4 +12,7 @@ class Product {
   factory Product.fromMap(Map<String, dynamic> map, String id) {
     return Product(uid: id, idCategory: map["idCategory"], name: map["name"]);
   }
+
+  @override
+  String toString() => name;
 }

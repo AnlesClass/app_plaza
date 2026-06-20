@@ -1,5 +1,8 @@
+import 'package:app_plaza_flutter/config/route_config.dart';
 import 'package:app_plaza_flutter/models/models.dart';
+import 'package:app_plaza_flutter/providers/providers.dart';
 import 'package:app_plaza_flutter/repositories/repositories.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:app_plaza_flutter/widgets/widgets.dart';
@@ -81,9 +84,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthRepository authRepository = ref.read(authRepositoryProvider);
-    final UserRepository userRepository = ref.read(userRepositoryProvider);
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -120,7 +120,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Container Card
+                  // Card: Formulario de Registro General
                   Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
@@ -296,8 +296,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                                   if (snapshot.hasError) {
                                     final String errorMessage = snapshot.error
                                         .toString();
-                                    // TODO: Mostrar error de alguna forma.
-                                    // TEST: Padding para mostrar error.
+                                    // TODO: Padding para mostrar error. Mejorar.
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16.0,
@@ -478,11 +477,17 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                                 child: ElevatedButton(
                                   onPressed: _isSubmitEnabled
                                       ? () async {
+                                          // Consultar repositorio de usuario
+                                          final UserRepository userRepository =
+                                              ref.read(userRepositoryProvider);
+
+                                          // Validar Formulario
                                           if (!_formKey.currentState!
                                               .validate()) {
                                             return;
                                           }
 
+                                          // Obtener campos: usuario, nombre, apellido, email, password.
                                           final username = _userCtrl.text
                                               .trim();
                                           final name = _nameCtrl.text.trim();
@@ -491,25 +496,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                                           final email = _emailCtrl.text.trim();
                                           final password = _passCtrl.text;
 
-                                          // Intentar registrar usuario en Auth
-
-                                          late final String uid;
-                                          try {
-                                            uid = await authRepository
-                                                .registerUser(email, password);
-                                          } catch (e) {
-                                            if (context.mounted) {
-                                              AppAlerts.showSnackbar(
-                                                context,
-                                                e.toString(),
-                                                isError: true,
-                                              );
-                                              return;
-                                            }
-                                          }
-
+                                          // Construir el modelo de usuario
                                           final user = User(
-                                            idRol: selectedRol!.uid!,
+                                            idRole: selectedRol!.uid!,
                                             idLocal: selectedLocal!.uid!,
                                             username: username,
                                             name: name,
@@ -518,12 +507,50 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                                             isActive: isUserActive,
                                           );
 
-                                          await userRepository.createUser(
-                                            user,
-                                            uid,
+                                          final authState = ref.read(
+                                            firebaseAuthUserProvider,
                                           );
 
-                                          _clearFields();
+                                          if (authState.value == null) {
+                                            // No hay usuario autenticado
+                                            AppAlerts.showSnackbar(
+                                              context,
+                                              'Debes iniciar sesión para crear usuarios',
+                                              isError: true,
+                                            );
+                                            return;
+                                          }
+
+                                          // Registrar usuario en el sistema
+                                          try {
+                                            await userRepository
+                                                .createUserWithCloudFunction(
+                                                  user,
+                                                  password,
+                                                );
+                                          } catch (e) {
+                                            if (context.mounted) {
+                                              AppAlerts.showSnackbar(
+                                                context,
+                                                e.toString(),
+                                              );
+                                            }
+
+                                            return;
+                                          }
+
+                                          // Limpiar campos
+                                          setState(() {
+                                            _clearFields();
+                                          });
+
+                                          // Notificiar el correcto registro del usuario
+                                          if (context.mounted) {
+                                            AppAlerts.showSnackbar(
+                                              context,
+                                              "Usuario Registrado Correctamente",
+                                            );
+                                          }
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
@@ -554,6 +581,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
             ),
           ),
 
+          // Botón: Regresar al Home
           Positioned(
             top: 45,
             left: 15,
@@ -561,7 +589,25 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
               backgroundColor: Colors.white.withValues(alpha: 0.3),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  // NOTA: En teoría solo se puede estar en el registro cuando se está logeado como administrador,
+                  // así que no debería haber problema al regresar al Home.
+
+                  // Leer datos de la sesión del momento
+                  final SessionData? sessionData = ref
+                      .read(sessionDataProvider)
+                      .value;
+                  // Si la sesión no es nula, ir a su ruta "Home"
+                  if (sessionData != null) {
+                    // Capturar identificador de rol y consultar su ruta "Home"
+                    final String idRole = sessionData.user.idRole;
+                    final String homeRoute = RouteConfig.getHomeRoute(idRole);
+                    // Ir a la ruta "Home"
+                    ref.read(appRouterProvider).go(homeRoute);
+                  } else {
+                    ref.read(appRouterProvider).go(RouteConfig.defaultRoute);
+                  }
+                },
               ),
             ),
           ),

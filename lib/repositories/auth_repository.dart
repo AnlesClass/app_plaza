@@ -49,4 +49,9 @@ class AuthRepository {
       throw "Error al intentar registrar el usuario.";
     }
   }
+
+  /// Salir de la sesión actual
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
 }

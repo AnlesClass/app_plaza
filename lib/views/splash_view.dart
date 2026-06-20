@@ -1,25 +1,26 @@
+import 'package:app_plaza_flutter/collections/routes_collections.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:app_plaza_flutter/views/views.dart';
+import 'package:go_router/go_router.dart';
 
-class SplashView extends StatefulWidget {
+class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
 
   @override
-  State<SplashView> createState() => _SplashScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashView> {
+class _SplashScreenState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();
-    // Tardar N segundos en pasar a la siguiente vista.
-    final navigator = Navigator.of(context);
+    // Llamar al provider del Navegador: App Router
+    final GoRouter appRouter = ref.read(appRouterProvider);
+    // Esperar 3 segundos e ir al Login
     Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      navigator.pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginView()),
-      );
+      appRouter.go(RoutesCollections.login);
     });
   }
 

@@ -1,6 +1,9 @@
 export 'create_category_view.dart';
 export 'create_local_view.dart';
+export 'create_role_view.dart';
 export 'create_table_view.dart';
+export 'homes/home_admin_view.dart';
+export 'local_products_view.dart';
 export 'login_view.dart';
 export 'register_view.dart';
 export 'splash_view.dart';

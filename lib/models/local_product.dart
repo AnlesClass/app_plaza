@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class LocalProduct {
   String? uid;
   final String idLocal;
@@ -26,13 +28,25 @@ class LocalProduct {
   }
 
   factory LocalProduct.fromMap(Map<String, dynamic> map, String id) {
+    // Convertir Timestamp a DateTime
+    final blockLimitRaw = map["blockLimit"];
+    final DateTime blockLimitDateTime;
+
+    if (blockLimitRaw is Timestamp) {
+      blockLimitDateTime = blockLimitRaw.toDate();
+    } else if (blockLimitRaw is DateTime) {
+      blockLimitDateTime = blockLimitRaw;
+    } else {
+      blockLimitDateTime = DateTime.now(); // Valor por defecto si hay error
+    }
+
     return LocalProduct(
       uid: id,
       idLocal: map["idLocal"],
       idProduct: map["idProduct"],
-      prize: map["prize"],
-      isBlocked: map["isBlocked"],
-      blockLimit: map["blockLimit"],
+      prize: (map["prize"] as num).toDouble(), // Asegurar que sea double
+      isBlocked: map["isBlocked"] ?? false,
+      blockLimit: blockLimitDateTime,
     );
   }
 }

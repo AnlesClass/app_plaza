@@ -1,18 +1,34 @@
+import 'package:app_plaza_flutter/models/category.dart';
+import 'package:app_plaza_flutter/models/product.dart';
+import 'package:app_plaza_flutter/repositories/category_repository.dart';
+import 'package:app_plaza_flutter/repositories/product_repository.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
+import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:app_plaza_flutter/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CreateProductView extends StatefulWidget {
+class CreateProductView extends ConsumerStatefulWidget {
   const CreateProductView({super.key});
 
   @override
-  State<CreateProductView> createState() => _CreateProductViewState();
+  ConsumerState<CreateProductView> createState() => _CreateProductViewState();
 }
 
-class _CreateProductViewState extends State<CreateProductView> {
+class _CreateProductViewState extends ConsumerState<CreateProductView> {
   final TextEditingController _productNameCtrl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String? _selectedCategory;
+
+  String? _selectedCategoryId;
+  String? _selectedCategoryName;
+  List<Category> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
 
   @override
   void dispose() {
@@ -20,16 +36,39 @@ class _CreateProductViewState extends State<CreateProductView> {
     super.dispose();
   }
 
+  Future<void> _loadCategories() async {
+    try {
+      final categoryRepository = ref.read(categoryRepositoryProvider);
+      final categories = await categoryRepository.getCategories();
+      setState(() {
+        _categories = categories;
+      });
+    } catch (e) {
+      if (mounted) {
+        AppAlerts.showSnackbar(context, "Error al cargar categorías: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final productRepository = ref.watch(productRepositoryProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppTheme.primaryColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back, color: AppTheme.tertiaryColor),
+          onPressed: () {
+            // Consultar AppRouter
+            final appRouter = ref.read(appRouterProvider);
+            // Navegar hacia atrás de ser posible
+            if (appRouter.canPop()) {
+              appRouter.pop();
+            }
+          },
         ),
         title: const Text(
           "Producto",
@@ -95,11 +134,17 @@ class _CreateProductViewState extends State<CreateProductView> {
               _buildLabel("Categoría"),
               _buildDropdown(
                 hint: "Selecciona una categoría",
-                value: _selectedCategory,
-                items: ['Bebidas Alcohólicas', 'Comida Marina'],
+                value: _selectedCategoryName,
+                items: _categories.map((c) => c.name).toList(),
                 onChanged: (val) {
                   setState(() {
-                    _selectedCategory = val;
+                    _selectedCategoryName = val;
+                    _selectedCategoryId = _categories
+                        .firstWhere(
+                          (c) => c.name == val,
+                          orElse: () => Category(name: '', description: ''),
+                        )
+                        .uid;
                   });
                 },
                 validator: (value) {
@@ -115,8 +160,38 @@ class _CreateProductViewState extends State<CreateProductView> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {}
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    final bool isAccepted = await AppAlerts.showConfirmation(
+                      context: context,
+                      title: "Confirmar Acción",
+                      message:
+                          "¿Está seguro(a) de que desea crear este producto?",
+                    );
+
+                    if (!isAccepted) return;
+
+                    final newProduct = Product(
+                      idCategory: _selectedCategoryId!,
+                      name: _productNameCtrl.text.trim(),
+                    );
+
+                    try {
+                      await productRepository.createProduct(newProduct);
+
+                      if (context.mounted) {
+                        AppAlerts.showSnackbar(
+                          context,
+                          "Producto registrado correctamente.",
+                        );
+                        clearFields();
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        AppAlerts.showSnackbar(context, e.toString());
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
@@ -150,6 +225,16 @@ class _CreateProductViewState extends State<CreateProductView> {
                       fontSize: 13,
                       height: 1.4,
                     ),
+                    children: [
+                      TextSpan(
+                        text: "Debug: ",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text:
+                            "El producto se crea como plantilla global. Luego se asignará a un local específico.",
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -217,5 +302,16 @@ class _CreateProductViewState extends State<CreateProductView> {
       onChanged: onChanged,
       validator: validator,
     );
+  }
+
+  void clearFields() {
+    _productNameCtrl.clear();
+    setState(() {
+      _selectedCategoryName = null;
+      _selectedCategoryId = null;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _formKey.currentState?.reset();
+    });
   }
 }

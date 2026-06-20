@@ -1,4 +1,5 @@
 // views/test_routes_view.dart
+import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +13,6 @@ class TestRoutesView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Test Routes - Panel de Navegación'),
-        backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 2,
@@ -22,11 +22,11 @@ class TestRoutesView extends StatelessWidget {
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.amber,
+              color: AppTheme.tertiaryColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text(
-              'DEV MODE',
+              'TEST',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
           ),
@@ -115,6 +115,14 @@ class TestRoutesView extends StatelessWidget {
             icon: Icons.assignment_ind,
             color: Colors.brown,
           ),
+          _buildRouteCard(
+            context,
+            title: 'Productos del Local',
+            route: '/local-products',
+            description: 'Ver productos asignados al local actual',
+            icon: Icons.inventory,
+            color: Colors.deepOrange,
+          ),
 
           const SizedBox(height: 16),
 
@@ -150,8 +158,8 @@ class TestRoutesView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.deepPurple.shade700, Colors.deepPurple.shade300],
+        gradient: const LinearGradient(
+          colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -191,14 +199,14 @@ class TestRoutesView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: Row(
         children: [
-          Icon(icon, size: 28, color: Colors.deepPurple),
+          Icon(icon, size: 28, color: AppTheme.primaryColor),
           const SizedBox(width: 12),
           Text(
             title,
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
+              color: AppTheme.secondaryColor,
             ),
           ),
           const Expanded(child: Divider()),
@@ -287,7 +295,7 @@ class TestRoutesView extends StatelessWidget {
           const SizedBox(width: 12),
           const Expanded(
             child: Text(
-              'Esta vista es solo para desarrollo. Se debe remover antes de lanzar a producción.',
+              "Esta es una vista de testeo. Brigith pon tu parte antes de acabar el segundo sprint UWU.",
               style: TextStyle(fontSize: 13),
             ),
           ),

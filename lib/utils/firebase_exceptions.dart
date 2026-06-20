@@ -41,7 +41,7 @@ abstract class FirebaseExceptions {
       case "not-found":
         return "El registro solicitado no existe o ha sido eliminado.";
       case "already-exists":
-        return "No se pudo crear el registro porque ya existe uno con el mismo ID.";
+        return "No fue posible el registro. Ya existe uno con características similares.";
       case "resource-exhausted":
         return "Se ha agotado la cuota de la base de datos o el almacenamiento está lleno.";
       case "failed-precondition":
@@ -56,6 +56,8 @@ abstract class FirebaseExceptions {
         return "La operación fue abortada por un conflicto en el sistema. Intenta de nuevo.";
       case "invalid-argument":
         return "Uno de los datos enviados a la base de datos es inválido.";
+      case "internal":
+        return "Error interno del servidor.";
       default:
         return "Error inesperado en la base de datos ($errorCode).";
     }

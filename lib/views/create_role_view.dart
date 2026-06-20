@@ -6,6 +6,7 @@ import 'package:app_plaza_flutter/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
+/// VISTA DEBUG. No agrega por ningún motivo en las visualización final.
 class CreateRoleView extends ConsumerStatefulWidget {
   const CreateRoleView({super.key});
 

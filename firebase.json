@@ -1,1 +1,46 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"app-plaza-24913","appId":"1:979020451369:android:f9034f269a226d11991638","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"app-plaza-24913","configurations":{"android":"1:979020451369:android:f9034f269a226d11991638","web":"1:979020451369:web:f8b973b672ff1b13991638","windows":"1:979020451369:web:457ccb42ad004de6991638"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "app-plaza-24913",
+          "appId": "1:979020451369:android:f9034f269a226d11991638",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "app-plaza-24913",
+          "configurations": {
+            "android": "1:979020451369:android:f9034f269a226d11991638",
+            "web": "1:979020451369:web:f8b973b672ff1b13991638",
+            "windows": "1:979020451369:web:457ccb42ad004de6991638"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}
