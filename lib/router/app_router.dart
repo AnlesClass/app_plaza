@@ -2,9 +2,11 @@ import 'package:app_plaza_flutter/config/route_config.dart';
 import 'package:app_plaza_flutter/collections/routes_collections.dart';
 import 'package:app_plaza_flutter/providers/session_providers.dart';
 import 'package:app_plaza_flutter/utils/app_alerts.dart';
+import 'package:app_plaza_flutter/views/show_orders_view.dart';
 import 'package:app_plaza_flutter/views/views.dart';
-import 'package:app_plaza_flutter/views/create_product_view.dart';
-import 'package:app_plaza_flutter/views/assign_product_view.dart';
+import 'package:app_plaza_flutter/views/admin/create_product_view.dart';
+import 'package:app_plaza_flutter/views/admin/assign_product_view.dart';
+import 'package:app_plaza_flutter/views/waiter/product_menu_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,13 +47,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Permanecer en la sesión actual mientras está cargando.
       if (sessionData.isLoading) {
         debugPrint(
-          "DEBUG: Sesión está cargando. Continúa en la pestaña actual.",
+          "[AUTH SESSION] Sesión está cargando. Continúa en la pestaña actual.",
         );
         return null;
       }
       // Si no hay sesión activa, redireccionar al Login
       if (sessionData.value == null) {
-        debugPrint("DEBUG: Redirigiendo al Login...");
+        debugPrint("[ENRUTAMIENTO] Redirigiendo al Login...");
         return RoutesCollections.login;
       }
 
@@ -59,10 +61,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final user = sessionData.value!.user;
       final userRole = user.idRole;
       final currentPath = state.uri.path;
+      debugPrint("[]: Redirigiendo al Login...");
 
       // Si el usuario está en la vista Login pero ya hay sesión activa
-      debugPrint("DEBUG: Ruta Actual => $currentPath");
-      debugPrint("DEBUG: Ruta Login => ${RoutesCollections.login}");
+      debugPrint("[REDIRECT-ROUTER] Ruta Actual => $currentPath");
+      debugPrint("[REDIRECT-ROUTER] Ruta Login => ${RoutesCollections.login}");
       if (currentPath == RoutesCollections.login ||
           currentPath == RoutesCollections.splash) {
         return RouteConfig.getHomeRoute(userRole);
@@ -76,7 +79,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (context.mounted) {
             AppAlerts.showSnackbar(
               context,
-              'No tienes permiso para acceder a esta sección',
+              "No tienes permiso para acceder a esta sección",
               isError: true,
             );
           }
@@ -90,6 +93,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // Definimos todas las rutas para la aplicación
       GoRoute(
         path: RoutesCollections.splash,
         builder: (context, state) => const SplashView(),
@@ -104,7 +108,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutesCollections.homeAdmin,
-        builder: (context, state) => const HomeAdminView(),
+        builder: (context, state) => const BusinessDashboardView(),
       ),
       GoRoute(
         path: RoutesCollections.createCategory,
@@ -131,17 +135,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CreateTableView(),
       ),
       GoRoute(
-        path: RoutesCollections.waiterTables,
-        builder: (context, state) => const WaiterTablesView(),
+        path: RoutesCollections.showTables,
+        builder: (context, state) => const ShowTablesView(),
+      ),
+      GoRoute(
+        path: RoutesCollections.showTableDetail,
+        builder: (context, state) {
+          // Capturamos el identificador de la mesa y consultamos si tiene una orden aún sin completar.
+          final param = state.pathParameters;
+          return ShowTableDetailView(tableId: param['tableId']!);
+        },
       ),
       GoRoute(
         path: RoutesCollections.localProducts,
         builder: (context, state) => const LocalProductsView(),
       ),
-      // TESTING
+      GoRoute(
+        path: RoutesCollections.localProductsMenu,
+        builder: (context, state) {
+          return const ProductMenuView();
+        },
+      ),
+      GoRoute(
+        path: RoutesCollections.showOrders,
+        builder: (context, state) => const ShowOrdersView(),
+      ),
+      // TODO: Pruebas de rutas, eliminar en la versión final.
       GoRoute(
         path: RoutesCollections.testRoutes,
         builder: (context, state) => const TestRoutesView(),
+      ),
+      GoRoute(
+        path: RoutesCollections.preOrderAccount,
+        builder: (context, state) => const PreOrderAccountView(),
       ),
     ],
   );

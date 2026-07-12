@@ -49,6 +49,11 @@ class AppTheme {
 
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryColor,
+        titleTextStyle: TextStyle(
+          color: quaternaryColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
         elevation: 1.0,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

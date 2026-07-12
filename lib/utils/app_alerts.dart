@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 
+/// Clase abstracta que permite mostrar Dialogs y Snackbars de confirmación y preguntas. Depende del contexto.
 abstract class AppAlerts {
   // Modal de Confirmación
   /// Muestra un modal de confirmación con el título y mensaje deseado.

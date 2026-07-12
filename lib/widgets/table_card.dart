@@ -1,29 +1,34 @@
+import 'package:app_plaza_flutter/collections/routes_collections.dart';
 import 'package:app_plaza_flutter/models/table.dart';
+import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:flutter/material.dart' hide Table;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TableCard extends StatelessWidget {
+class TableCard extends ConsumerWidget {
   final Table table;
 
   const TableCard({super.key, required this.table});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Definición de paleta de colores para la tarjeta
     Color backgroundColor;
     Color borderColor;
     Color textColor;
 
-    if (table.isEnable) {
-      backgroundColor = Colors.grey[200]!;
-      borderColor = Colors.grey[400]!;
-      textColor = Colors.grey[600]!;
-    } else if (table.isOccupied) {
+    // Casos: Habilitado y Libre, Habilitado y Ocupado, Deshabilitado.
+    if (table.isEnable & table.isOccupied) {
       backgroundColor = Colors.red[50]!;
       borderColor = Colors.red[400]!;
       textColor = Colors.red[700]!;
-    } else {
+    } else if (table.isEnable & !table.isOccupied) {
       backgroundColor = Colors.green[50]!;
       borderColor = Colors.green[400]!;
       textColor = Colors.green[700]!;
+    } else {
+      backgroundColor = Colors.grey[200]!;
+      borderColor = Colors.grey[400]!;
+      textColor = Colors.grey[600]!;
     }
 
     return Card(
@@ -34,17 +39,16 @@ class TableCard extends StatelessWidget {
       ),
       color: backgroundColor,
       child: InkWell(
-        onTap: table.isEnable
+        onTap: (!table.isEnable || table.uid == null)
             ? null
             : () {
-                // TODO: Navegar a la vista de pedido de la mesa
-                if (table.isOccupied) {
-                  // TODO: Ver pedido actual
-                  // Enviar UID.
-                  table.uid;
-                } else {
-                  // TODO: Crear nuevo pedido
-                }
+                ref
+                    .read(appRouterProvider)
+                    .push(
+                      RoutesCollections.buildShowTableDetailUrl(
+                        table.uid!,
+                      ), // # /show-table-detail/:tableId
+                    );
               },
         borderRadius: BorderRadius.circular(12),
         child: Container(

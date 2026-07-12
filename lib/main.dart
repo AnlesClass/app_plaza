@@ -1,5 +1,6 @@
 import 'package:app_plaza_flutter/repositories/auth_repository.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
+import 'package:app_plaza_flutter/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
@@ -23,13 +24,15 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final GoRouter appRouter = ref.watch(appRouterProvider);
-    // TODO: Implementar provider para controlar el redibujado de ltema oscuro/claro
+    final AlertService alertService = ref.watch(alertServiceProvider);
 
+    // TODO: Implementar provider para controlar el redibujado de ltema oscuro/claro
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Plaza App',
       theme: AppTheme.lightTheme,
       routerConfig: appRouter,
+      scaffoldMessengerKey: alertService.scaffoldMessengerKey,
       // TODO: Floating Button Debug. Borrar al finalizar las pruebas.
       builder: (context, child) {
         return Scaffold(

@@ -1,7 +1,10 @@
+export 'account_receipt.dart';
 export 'category.dart';
-export 'local_product_with_details.dart';
-export 'local_product.dart';
 export 'local.dart';
+export 'local_product.dart';
+export 'order.dart';
+export 'order_item.dart';
+export 'payment_details.dart';
 export 'product.dart';
 export 'role.dart';
 export 'session_data.dart';

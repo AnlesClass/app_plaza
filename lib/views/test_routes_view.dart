@@ -1,4 +1,5 @@
 // views/test_routes_view.dart
+import 'package:app_plaza_flutter/collections/routes_collections.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -139,9 +140,17 @@ class TestRoutesView extends StatelessWidget {
           _buildRouteCard(
             context,
             title: 'Vista de Mesas (Mesero)',
-            route: '/waiter-table',
-            description: 'Pantalla principal del mesero',
+            route: RoutesCollections.showTables,
+            description: 'Pantalla principal del mesero (Visualizar Mesas)',
             icon: Icons.restaurant_menu,
+            color: Colors.red,
+          ),
+          _buildRouteCard(
+            context,
+            title: 'Vista de Productos para Menú (Mesero)',
+            route: '/local-products-menu',
+            description: 'Pantalla de despacho de Menú',
+            icon: Icons.menu_book_rounded,
             color: Colors.red,
           ),
 
@@ -317,7 +326,8 @@ class TestRoutesView extends StatelessWidget {
       '/create-product',
       '/assign-product',
       '/create-table',
-      '/waiter-table',
+      '/waiter-tables',
+      '/local-products-menu',
     ];
     return allRoutes.where((r) => !excludedRoutes.contains(r)).length;
   }

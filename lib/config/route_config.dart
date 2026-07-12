@@ -19,14 +19,32 @@ class RouteConfig {
     RoutesCollections.register: [RolesCollections.adminId],
 
     // Rutas operativas
-    RoutesCollections.waiterTables: [
-      RolesCollections.waiterId,
+    RoutesCollections.showTables: [
       RolesCollections.adminId,
+      RolesCollections.waiterId,
+    ],
+    RoutesCollections.showTableDetail: [
+      RolesCollections.adminId,
+      RolesCollections.waiterId,
     ],
     RoutesCollections.localProducts: [
-      RolesCollections.waiterId,
       RolesCollections.adminId,
+      RolesCollections.waiterId,
       RolesCollections.chefId,
+      RolesCollections.cashierId,
+    ],
+    RoutesCollections.localProductsMenu: [
+      RolesCollections.adminId,
+      RolesCollections.waiterId,
+    ],
+    RoutesCollections.showOrders: [
+      RolesCollections.adminId,
+      RolesCollections.waiterId,
+      RolesCollections.chefId,
+    ],
+    RoutesCollections.preOrderAccount: [
+      RolesCollections.adminId,
+      RolesCollections.waiterId,
       RolesCollections.cashierId,
     ],
 
@@ -37,8 +55,8 @@ class RouteConfig {
   // Configurar ruta de inicio para cada tipo de Usuario
   static const Map<String, String> roleHomeRoutes = {
     RolesCollections.adminId: RoutesCollections.homeAdmin,
-    RolesCollections.chefId: RoutesCollections.localProducts,
-    RolesCollections.waiterId: RoutesCollections.waiterTables,
+    RolesCollections.chefId: RoutesCollections.showOrders,
+    RolesCollections.waiterId: RoutesCollections.showTables,
     RolesCollections.cashierId: RoutesCollections.localProducts,
   };
 
@@ -46,7 +64,7 @@ class RouteConfig {
   static const String defaultRoute = RoutesCollections.login;
 
   // Ruta por defecto: En caso no haya Home válido
-  static const String fallbackRoute = RoutesCollections.waiterTables;
+  static const String fallbackRoute = RoutesCollections.showTables;
 
   // Rutas públicas
   static const List<String> publicRoutes = [

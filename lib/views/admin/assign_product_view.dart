@@ -26,6 +26,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
 
   List<Product> _products = [];
   List<Local> _locals = [];
+  List<Category> _categories = [];
   bool _isLoading = true;
 
   @override
@@ -42,18 +43,22 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
   }
 
   Future<void> _loadData() async {
+    // Cambiar estado de carga.
     setState(() => _isLoading = true);
 
     try {
       final productRepo = ref.read(productRepositoryProvider);
       final localRepo = ref.read(localRepositoryProvider);
+      final categoryRepo = ref.read(categoryRepositoryProvider);
 
       final products = await productRepo.getAllProducts();
       final locals = await localRepo.getLocals();
+      final categories = await categoryRepo.getCategories();
 
       setState(() {
         _products = products;
         _locals = locals;
+        _categories = categories;
         _isLoading = false;
       });
     } catch (e) {
@@ -74,9 +79,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.tertiaryColor),
           onPressed: () {
-            // Consultar AppRouter
             final appRouter = ref.read(appRouterProvider);
-            // Navegar hacia atrás de ser posible
             if (appRouter.canPop()) {
               appRouter.pop();
             }
@@ -100,6 +103,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Título y Subtítulo
                     const Text(
                       "Asignar Producto",
                       style: TextStyle(
@@ -119,6 +123,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                     ),
                     const SizedBox(height: 35),
 
+                    // Campo: Producto
                     _buildLabel("Producto"),
                     CustomDropdownButtonFormField<Product>(
                       hint: "Selecciona un producto",
@@ -138,6 +143,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                     ),
                     const SizedBox(height: 25),
 
+                    // Campo: Local
                     _buildLabel("Local"),
                     CustomDropdownButtonFormField<Local>(
                       hint: "Selecciona un local",
@@ -157,6 +163,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                     ),
                     const SizedBox(height: 25),
 
+                    // Campo: Precio
                     CustomTextFormField(
                       label: "Precio",
                       hint: "0.00",
@@ -176,6 +183,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                     ),
                     const SizedBox(height: 25),
 
+                    // Botón: Iniciar Bloqueado
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -203,6 +211,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                     ),
                     const SizedBox(height: 15),
 
+                    // Campo: Bloquear Hasta
                     if (_isBlocked)
                       CustomTextFormField(
                         label: "Bloquear Hasta",
@@ -233,9 +242,9 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
                           return null;
                         },
                       ),
-
                     const SizedBox(height: 40),
 
+                    // Botón: Enviar Producto
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -279,6 +288,7 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
     );
   }
 
+  // Manejar el envío de un "LocalProduct"
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedProduct == null || _selectedLocal == null) return;
@@ -297,10 +307,20 @@ class _AssignProductViewState extends ConsumerState<AssignProductView> {
         ? _parseDate(_dateCtrl.text)
         : DateTime.now();
 
+    final matchingCategory = _categories.firstWhere(
+      (catergoryTemp) => catergoryTemp.uid == _selectedProduct!.idCategory,
+      orElse: () =>
+          Category(uid: '', name: "General", description: ''), // Fallback
+    );
+
+    // Instanciamos el modelo con los datos denormalizados
     final newLocalProduct = LocalProduct(
       idLocal: _selectedLocal!.uid!,
       idProduct: _selectedProduct!.uid!,
-      prize: price,
+      idCategory: _selectedProduct!.idCategory,
+      productName: _selectedProduct!.name,
+      categoryName: matchingCategory.name,
+      price: price,
       isBlocked: _isBlocked,
       blockLimit: blockLimit,
     );

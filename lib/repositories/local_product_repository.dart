@@ -6,18 +6,37 @@ import 'package:app_plaza_flutter/utils/firebase_exceptions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ### PROVIDERS DE PRODUCTOS EN LOCAL ###
+
+/// Repositorio de "Local-Products"
 final localProductRepositoryProvider = Provider<LocalProductRepository>((ref) {
   final firestoreProvider = ref.watch(firestoreInstanceProvider);
   return LocalProductRepository(firestoreProvider: firestoreProvider);
 });
 
+/// Provider que escucha los productos de un local específico (en streaming)
+final streamProductsByLocalProvider =
+    StreamProvider.family<List<LocalProduct>, String>((ref, localId) {
+      final repository = ref.watch(localProductRepositoryProvider);
+      return repository.streamLocalProductsByLocal(localId);
+    });
+
+/// Provider que devuelve los productos de un local específico (future)
+final getLocalProductsByLocalProvider =
+    FutureProvider.family<List<LocalProduct>, String>((ref, localId) {
+      final repository = ref.watch(localProductRepositoryProvider);
+      return repository.getLocalProductsByLocal(localId);
+    });
+
+/// Clase de repositorio que gestiona la interacción de productos de un local con la base
+/// de datos Firestore.
 class LocalProductRepository {
   final FirebaseFirestore _firestoreProvider;
 
   LocalProductRepository({required FirebaseFirestore firestoreProvider})
     : _firestoreProvider = firestoreProvider;
 
-  // LocalProduct: Crear asignación
+  /// LocalProduct: Crear asignación
   Future<void> createLocalProduct(LocalProduct localProduct) async {
     try {
       await _firestoreProvider
@@ -30,7 +49,7 @@ class LocalProductRepository {
     }
   }
 
-  // LocalProduct: Leer por ID
+  /// LocalProduct: Leer por ID
   Future<LocalProduct?> readLocalProduct(String uid) async {
     try {
       final doc = await _firestoreProvider
@@ -49,7 +68,7 @@ class LocalProductRepository {
     }
   }
 
-  // LocalProduct: Stream de productos por local
+  /// LocalProduct: Stream de productos por local
   Stream<List<LocalProduct>> streamLocalProductsByLocal(String idLocal) {
     try {
       return _firestoreProvider
@@ -66,7 +85,7 @@ class LocalProductRepository {
     }
   }
 
-  // LocalProduct: Leer todos los productos de un local (una sola vez)
+  /// LocalProduct: Leer todos los productos de un local (una sola vez)
   Future<List<LocalProduct>> getLocalProductsByLocal(String idLocal) async {
     try {
       final querySnapshot = await _firestoreProvider
@@ -84,7 +103,7 @@ class LocalProductRepository {
     }
   }
 
-  // LocalProduct: Actualizar
+  /// LocalProduct: Actualizar
   Future<void> updateLocalProduct(LocalProduct localProduct) async {
     if (localProduct.uid == null) throw "No se puede actualizar sin ID.";
     try {

@@ -2,12 +2,13 @@ import 'package:app_plaza_flutter/collections/routes_collections.dart';
 import 'package:app_plaza_flutter/repositories/repositories.dart';
 import 'package:app_plaza_flutter/router/app_router.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
+import 'package:app_plaza_flutter/utils/drawer_item_data.dart';
 import 'package:app_plaza_flutter/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeAdminView extends ConsumerWidget {
-  const HomeAdminView({super.key});
+class BusinessDashboardView extends ConsumerWidget {
+  const BusinessDashboardView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,40 +36,55 @@ class AdminDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Creamos una lista con los diferentes nombres y rutas.
     final menuItems = [
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Registrar Usuario",
         icon: Icons.person_add_alt_1_rounded,
         route: RoutesCollections.register,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Crear Locales",
         icon: Icons.storefront_rounded,
         route: RoutesCollections.createLocal,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Crear Categorías",
         icon: Icons.category_rounded,
         route: RoutesCollections.createCategory,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Crear Productos",
         icon: Icons.inventory_2_rounded,
         route: RoutesCollections.createProduct,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Asignar Productos",
         icon: Icons.assignment_turned_in_rounded,
         route: RoutesCollections.assignProduct,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Crear Mesas",
         icon: Icons.table_restaurant_rounded,
         route: RoutesCollections.createTable,
       ),
-      const _DrawerItemData(
+      const DrawerItemData(
         title: "Gestionar Roles",
         icon: Icons.admin_panel_settings_rounded,
         route: RoutesCollections.createRole,
+      ),
+      const DrawerItemData(
+        title: "Ver Órdenes",
+        icon: Icons.edit_document,
+        route: RoutesCollections.showOrders,
+      ),
+      const DrawerItemData(
+        title: "Ver Mesas",
+        icon: Icons.table_bar,
+        route: RoutesCollections.showTables,
+      ),
+      const DrawerItemData(
+        title: "Ver Productos del Local",
+        icon: Icons.inventory_2_rounded,
+        route: RoutesCollections.localProducts,
       ),
     ];
 
@@ -287,18 +303,4 @@ class DashboardPlaceholder extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Clase auxiliar. Guarda los datos de un Drawer Tile.
-/// Elemento: REUTILIZABLE
-class _DrawerItemData {
-  final String title;
-  final IconData icon;
-  final String route;
-
-  const _DrawerItemData({
-    required this.title,
-    required this.icon,
-    required this.route,
-  });
 }

@@ -10,6 +10,4 @@ class RolesCollections {
   static const String chefName = "Cocinero";
   static const String waiterName = "Mesero";
   static const String cashierName = "Cajero";
-
-  ///
 }

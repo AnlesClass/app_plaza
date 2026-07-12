@@ -1,11 +1,13 @@
-class FirestoreCollections {
+abstract class FirestoreCollections {
   static const String categories = "categories";
   static const String localProducts = "local_products";
   static const String locals = "locals";
+  static const String orders = "orders";
   static const String products = "products";
   static const String roles = "roles";
   static const String tables = "tables";
   static const String users = "users";
+  static const String receipts = "receipts";
 }
 
 /**

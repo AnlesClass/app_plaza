@@ -1,5 +1,4 @@
 import 'package:app_plaza_flutter/models/models.dart';
-import 'package:app_plaza_flutter/providers/providers.dart';
 import 'package:app_plaza_flutter/repositories/repositories.dart';
 import 'package:app_plaza_flutter/themes/app_theme.dart';
 import 'package:app_plaza_flutter/utils/app_alerts.dart';
@@ -32,8 +31,23 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Providers: Observar cambio en sesión activa,
-    final sessionDataAsync = ref.watch(sessionDataProvider);
+    // Ancho de la pantalla
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Límite de pantalla (para escalado lineal)
+    const double widthMin = 475.0;
+    const double widthMax = 1920.0;
+
+    const double marginMin = 15.0;
+    const double marginMax = 700.0;
+
+    // Calculamos el progreso
+    final double progreso = ((screenWidth - widthMin) / (widthMax - widthMin))
+        .clamp(0.0, 1.0);
+
+    // Aplicamos la función lineal
+    final double margenLineal =
+        marginMin + (progreso * (marginMax - marginMin));
 
     return Scaffold(
       body: Stack(
@@ -45,7 +59,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           Center(
             child: SingleChildScrollView(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 25),
+                margin: EdgeInsets.symmetric(horizontal: margenLineal),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 30,
                   vertical: 40,
@@ -66,47 +80,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ------ INICIO DEL DEBUG ------
-                      // Widget Genérico: En base a datos de la sesión actual.
-                      sessionDataAsync.when(
-                        data: (sessionData) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text(
-                            sessionData == null
-                                ? '[debug] sessionData: null (sin sesión)'
-                                : '[debug] sessionData:\n'
-                                      '  uid: ${sessionData.firebaseUid}\n'
-                                      '  usuario: ${sessionData.user.username}\n'
-                                      '  local: ${sessionData.user.idLocal}\n'
-                                      '  rol: ${sessionData.user.idRole}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        loading: () => const Padding(
-                          padding: EdgeInsets.only(bottom: 12),
-                          child: Text(
-                            '[debug] sessionData: cargando...',
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                        ),
-                        error: (error, _) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text(
-                            '[debug] sessionData error: $error',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      // ------ FIN DEL DEBUG ------
-
                       // Ícono principal
                       const Icon(
                         Icons.restaurant_menu_outlined,
